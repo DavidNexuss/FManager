@@ -3,11 +3,13 @@
 #include <QFileDialog>
 #include <iostream>
 #include <QProcess>
-#define _UNICODE
-#include <MediaInfo/MediaInfo.h>
 #include <vector>
 #include <list>
 #include <QRegularExpression>
+#include <QMessageBox>
+
+#define _UNICODE
+#include <MediaInfo/MediaInfo.h>
 using namespace std;
 
 #define VIDEO_FILTER(o) << #o
@@ -31,6 +33,22 @@ bool is_number(const std::string& s)
 }
 
 const QStringList typeList = QStringList() REGISTERED_VIDEO_TYPES(VIDEO_FILTER);
+
+QString regularProgressBar = " QProgressBar:horizontal { \
+        text-align: center; \
+        border-radius: 0px; \
+        } \
+        QProgressBar::chunk:horizontal { \
+        background: rgb(80, 240, 80); \
+        }";
+
+QString errorProgressBar = "QProgressBar:horizontal { \
+text-align: center; \
+border-radius: 0px; \
+} \
+QProgressBar::chunk:horizontal { \
+background: rgb(255, 20, 20); \
+}";
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -56,7 +74,9 @@ MainWindow::MainWindow(QWidget *parent)
         QString error;
         if (!startConversionFrame(error))
         {
-            cerr << error.toStdString() << endl;
+            QMessageBox msgBox;
+            msgBox.setText(error);
+            msgBox.exec();
             //Throw some error
         }else convert();
     });
@@ -100,7 +120,7 @@ MainWindow::MainWindow(QWidget *parent)
                 hours = str.substr(0,str.find(delimiter));
                 minutes = str.substr(str.find(delimiter) + 1,str.size() - 1);
 
-                cerr << "Times " << hours << " " << minutes << endl;
+               // cerr << "Times " << hours << " " << minutes << endl;
                 partialMinutes = stoi(hours) * 60 + stoi(minutes);
                 updateProgressBar();
             }
@@ -205,7 +225,7 @@ bool MainWindow::startConversionFrame(QString& error)
 
     convertProgress->setValue(0);
     convertProgress->setFormat("%p%");
-
+    convertProgress->setStyleSheet(regularProgressBar);
     return true;
 }
 void MainWindow::endConversionFrame(int exitCode)
@@ -220,6 +240,10 @@ void MainWindow::endConversionFrame(int exitCode)
         default:convertResult->setText("Conversió fallida!"); break;
     }
 
+    if (exitCode)
+    {
+        convertProgress->setStyleSheet(errorProgressBar);
+    }
     currentFile = 0;
     partialMinutes = 0;
     accumaltedMinutes = 0;
@@ -228,7 +252,7 @@ void MainWindow::endConversionFrame(int exitCode)
 
 void MainWindow::updateProgressBar()
 {
-    convertProgress->setFormat("%p% " + conversionFiles[currentFile - 1] + " (" + QString(currentFile) + "/" + QString(conversionFiles.size()) + ")");
+    convertProgress->setFormat("%p% " + conversionFiles[currentFile - 1] + " (" + QString::number(currentFile - 1) + "/" + QString::number(conversionFiles.size()) + ")");
     convertProgress->setValue((accumaltedMinutes + partialMinutes) * 100 / targetMinutes);
 }
 void MainWindow::convert()
