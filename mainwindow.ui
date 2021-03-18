@@ -58,7 +58,33 @@ QTabWidget
 
 QTableWidget {
 	padding: 10px;
-}</string>
+}
+
+QHeaderView::section {
+    background-color: #000000;
+    padding: 2px;
+    border: 0px solid;
+    font-size: 12pt;
+	color: white;
+}
+
+
+QTableWidget {
+    gridline-color: #fffff8;
+    font-size: 12pt;
+}
+
+QTableWidget QTableCornerButton::section {
+    background-color: #000000;
+    border: 0px solid;
+	color: white;
+    padding: 2px;
+}
+QTableWidget QTableWidgetItem {
+	padding: 3px;
+	text-align: center;
+}
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -198,7 +224,11 @@ QTableWidget {
                </widget>
               </item>
               <item row="1" column="0" colspan="2">
-               <widget class="FileTable" name="sourceTable"/>
+               <widget class="FileTable" name="sourceTable">
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+               </widget>
               </item>
               <item row="0" column="0" colspan="2">
                <widget class="QLabel" name="sourceDir">

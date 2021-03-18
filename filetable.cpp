@@ -13,7 +13,9 @@ FileTable::FileTable(QWidget* parent) : QTableWidget(parent)
         setHorizontalHeaderItem(tableIndex++,header2);
     };
     setColumnCount(3);
-    horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    horizontalHeader()->setStretchLastSection(true);
+
     setHeader("Arxiu");
     setHeader("Tamany");
     setHeader("Duracio");
@@ -58,11 +60,26 @@ void FileTable::addFile(const QString& name,double tamany,int duracio)
     checkBox->setText(name);
     int row = rowCount();
     insertRow(row);
-    setCellWidget(row,0,checkBox);
-    setCellWidget(row,1,new QLabel(QString::number(tamany)));
-    setCellWidget(row,2,new QLabel(QString::number(duracio)));
 
-    horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    auto format = [](QWidget* widget)
+    {
+        widget->setStyleSheet("* { padding: 8px; }");
+        return widget;
+    };
+
+    auto label = [format](const QString& data){
+        //QFrame* f = new QFrame();
+        //f->setLayout(new 3)
+        QLabel* q = new QLabel(data);
+        q->setAlignment(Qt::AlignCenter);
+        return format(q);
+    };
+
+    setCellWidget(row,0,format(checkBox));
+    setCellWidget(row,1,label(QString::number(tamany)));
+    setCellWidget(row,2,label(QString::number(duracio)));
+
+    horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     map[checkBox] = items.size();
     items.push_back({tamany,duracio});
