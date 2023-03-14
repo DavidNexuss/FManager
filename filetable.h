@@ -31,7 +31,7 @@ public:
     void setSizeLabel(QLabel* sizeLabel);
     void updateDurationLabel();
     void setDurationLabel(QLabel* durationLabel);
-    void addFile(const QString& name,double tamany,int duracio);
+    void addFile(const QString& name,double tamany,int duracio,const QString& res);
     void reset();
 
     QVector<QString> getFiles() const;

@@ -1,2 +1,4 @@
 *.o
 FManager
+FManager.pro.user*
+*.qm

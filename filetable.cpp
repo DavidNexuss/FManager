@@ -5,6 +5,8 @@
 FileTable::FileTable(QWidget* parent) : QTableWidget(parent)
 {
     m_tamany_total = 0;
+    m_duracio_total = 0;
+
     int tableIndex = 0;
     auto setHeader = [&](const QString& name)
     {
@@ -12,13 +14,15 @@ FileTable::FileTable(QWidget* parent) : QTableWidget(parent)
         header2->setText(name);
         setHorizontalHeaderItem(tableIndex++,header2);
     };
-    setColumnCount(3);
+    setColumnCount(4);
     horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     horizontalHeader()->setStretchLastSection(true);
+    verticalHeader()->setVisible(false);
 
-    setHeader("Arxiu");
-    setHeader("Tamany");
-    setHeader("Duracio");
+    setHeader(tr("File"));
+    setHeader(tr("Size"));
+    setHeader(tr("Duration"));
+    setHeader(tr("Resolution"));
 }
 
 void FileTable::reset()
@@ -36,9 +40,12 @@ void FileTable::setSizeLabel(QLabel *sizeLabel)
     this->sizeLabel = sizeLabel;
     updateSizeLabel();
 }
+inline float decimalSize(float size) {
+    return float(int(size * 100)) / 100.0f;
+}
 void FileTable::updateSizeLabel()
 {
-    if (sizeLabel != nullptr)sizeLabel->setText(QString::number(m_tamany_total) + " MB");
+    if (sizeLabel != nullptr)sizeLabel->setText(QString::number(decimalSize(m_tamany_total)) + " MB");
 }
 
 void FileTable::setDurationLabel(QLabel *durationLabel)
@@ -54,7 +61,7 @@ int FileTable::getTotalDuration() const
 {
     return m_duracio_total;
 }
-void FileTable::addFile(const QString& name,double tamany,int duracio)
+void FileTable::addFile(const QString& name,double tamany,int duracio,const QString& res)
 {
     QCheckBox* checkBox = new QCheckBox(name);
     checkBox->setText(name);
@@ -76,8 +83,9 @@ void FileTable::addFile(const QString& name,double tamany,int duracio)
     };
 
     setCellWidget(row,0,format(checkBox));
-    setCellWidget(row,1,label(QString::number(tamany)));
+    setCellWidget(row,1,label(QString::number(decimalSize(tamany))));
     setCellWidget(row,2,label(QString::number(duracio)));
+    setCellWidget(row,3,label(res));
 
     horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
